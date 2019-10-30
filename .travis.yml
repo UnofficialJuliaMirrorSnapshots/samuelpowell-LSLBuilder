@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=true
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for samuelpowell/LSLBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: H8DxnTZvu9tlvEfHRuz3YVnJsMducss3fTk1022I7GMOdnhSBdQewIni2DsIQCtxl0HVsB6pxvmnlIK+viM64/MQXJ3/2BKN4YW0Vw+/hw/CaHXjCy3qd16i5sLVBiZRo/SKa+1nAmnPj5a2jwYuU3xZqvcZtn4Eic+3HGq4FI8kHQNEBTGhHnR8ET/QHm2KJVafoCUUb6x9ijZkZ3L4Y4Cr/7ZOgasg2mOpyxqJEAivEgVz4HXPlKzioNAJyDSXKWcD4WCMff/V9H7eyZMQbtuE5Jss8K16g/OcY/zuR3gNtlsA8DgTyXQqDi4fHK5yUBPxnNcdv52P5N/MJfPktqaaHJ1d1JsbiY54ek5iioXojGoKqay4qFI+DccPp+/7zgPK9HD3q4ZQn6VQZovcUADEpAY/p1xHf64ZTtr2RVlBoNnMEGbzo29bWUgmWI+7sSHVI56ZTOiV1G8+2AaMG0GhHqfyjzPCv8Lm/0azPLS6JrMbfX7glLjsvpauHvzniJIrrKaQC8pA+fLXJKO4m3v+OCODE3Kpp5kRUbqmoWj31Te+YVSHvfuNanWrZOB7KKyaetpPU4jNddefBY9Lae8KLQ7l9dJEna/bvEXXqYEkFJ0WpFESg+cnlAeOb+0LnRwL9Rho0EUbHD+vkULcP6HTxQrsA/s53ROcaafs5BQ=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: samuelpowell/LSLBuilder
+        tags: true
